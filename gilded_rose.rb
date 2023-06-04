@@ -25,9 +25,11 @@ class GildedRose
   private
 
   def before_day_gone_updates(item)
-    case item
+    case item.name
+    when SULFURAS
+      nil
     when AGED_BRIE
-      update_brie(item)
+      increase_quality(item)
     when BACKSTAGE_PASSES
       update_backstage_pass(item)
     when CONJURED_ITEM_REGEXP
@@ -38,7 +40,9 @@ class GildedRose
   end
 
   def after_day_gone_updates(item)
-    case item
+    case item.name
+    when SULFURAS
+      nil
     when AGED_BRIE
       increase_quality(item)
     when BACKSTAGE_PASSES
@@ -77,10 +81,6 @@ class GildedRose
     if item.sell_in < 6
       increase_quality(item)
     end
-  end
-
-  def update_brie(item)
-    increase_quality(item)
   end
 
   def day_passed(item)
