@@ -5,6 +5,9 @@ class GildedRose
   SULFURAS = 'Sulfuras, Hand of Ragnaros'
   BACKSTAGE_PASSES = 'Backstage passes to a TAFKAL80ETC concert'
   CONJURED_ITEM_REGEXP = /^Conjured/
+  MAX_QUALITY = 50
+  FIRST_BACKSTAGE_PASS_LIMIT = 11
+  SECOND_BACKSTAGE_PASS_LIMIT = 6
 
   def initialize(items)
     @items = items
@@ -12,19 +15,19 @@ class GildedRose
 
   def update_quality()
     @items.each do |item|
-      before_day_gone_updates(item)
+      before_day_passed_updates(item)
 
       day_passed(item)
 
-      if item.sell_in < 0
-        after_day_gone_updates(item)
+      if item.sell_in.negative?
+        after_day_passed_updates(item)
       end
     end
   end
 
   private
 
-  def before_day_gone_updates(item)
+  def before_day_passed_updates(item)
     case item.name
     when SULFURAS
       nil
@@ -35,11 +38,11 @@ class GildedRose
     when CONJURED_ITEM_REGEXP
       update_conjured(item)
     else
-      update_item(item)
+      decrease_quality(item)
     end
   end
 
-  def after_day_gone_updates(item)
+  def after_day_passed_updates(item)
     case item.name
     when SULFURAS
       nil
@@ -50,16 +53,16 @@ class GildedRose
     when CONJURED_ITEM_REGEXP
       update_conjured(item)
     else
-      update_item(item)
+      decrease_quality(item)
     end
   end
 
   def decrease_quality(item)
-    item.quality -= 1 if item.quality > 0
+    item.quality -= 1 if item.quality.positive?
   end
 
   def increase_quality(item)
-    item.quality += 1 if item.quality < 50
+    item.quality += 1 if item.quality < MAX_QUALITY
   end
 
   def update_conjured(item)
@@ -67,18 +70,14 @@ class GildedRose
     decrease_quality(item)
   end
 
-  def update_item(item)
-    decrease_quality(item)
-  end
-
   def update_backstage_pass(item)
     increase_quality(item)
 
-    if item.sell_in < 11
+    if item.sell_in < FIRST_BACKSTAGE_PASS_LIMIT
       increase_quality(item)
     end
 
-    if item.sell_in < 6
+    if item.sell_in < SECOND_BACKSTAGE_PASS_LIMIT
       increase_quality(item)
     end
   end
