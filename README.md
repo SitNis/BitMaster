@@ -10,7 +10,7 @@ Run 'bundle install' to install required gems
 
 Run 'bundle exec rspec gilded_rose_spec.rb' for tests
 
-# How to configure application
+# How to configure and run application
 
 Go to 'texttext_fixture.rb' and change 'days' variable
 
